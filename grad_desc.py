@@ -103,6 +103,27 @@ def gradient_desc_norm(points, starting_b, starting_m, learning_rate, gradient_t
             
     return [b, m, gradient_norms, iteration]
 
+def normal_equations(points):
+    mean_x, mean_y = points.mean(0)
+    
+    # m
+    num = 0
+    den = 0
+    for i in range(len(points)):
+        x = points[i, 0]
+        y = points[i, 1]
+        
+        num += (x - mean_x)*(y - mean_y)
+        den += (x - mean_x)**2
+        
+    new_m = num/den
+    
+    # b = mean(y) - m * mean(x)
+    new_b = mean_y - new_m * mean_x
+    
+    return [new_b, new_m, 0, 0]
+    
+
 def gradient_desc_runner(points, starting_b, starting_m, learning_rate, num_iterations, stopping_criteria, gradient_threshold):
     b = starting_b
     m = starting_m
@@ -130,6 +151,8 @@ def gradient_desc_runner(points, starting_b, starting_m, learning_rate, num_iter
             i += 1
     elif(stopping_criteria == 2):
         results = gradient_desc_norm(array(points), b, m, learning_rate, gradient_threshold)
+    elif(stopping_criteria == 3):
+        results = normal_equations(array(points))
 
     return results
 
